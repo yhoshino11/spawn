@@ -8,20 +8,18 @@ defmodule SendToken do
   end
 end
 
-defmodule Sender do
-  def emit(sender, name) do
-    send spawn(SendToken, :echo, []), {sender, name}
+defmodule Main do
+  def exec(names), do: names |> Enum.map(&(emit(&1)))
+
+  def emit(name) do
+    send spawn(SendToken, :echo, []), {self, name}
     receive do
       {:ok, result} ->
-        IO.puts result
+        IO.puts "#{inspect result}"
     after 500 ->
-      IO.puts "Gameover!"
+      IO.puts "Timeout!"
     end
   end
-end
-
-defmodule Main do
-  def exec(names), do: names |> Enum.map(&(Sender.emit(self, &1)))
 end
 
 ["fred", "betty"] |> Main.exec
