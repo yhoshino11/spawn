@@ -1,13 +1,17 @@
 defmodule Chain do
   def counter(next_pid) do
     receive do
-      n -> send next_pid, n + 1
+      n ->
+        IO.puts "counter received #{inspect(n)}, next pid is #{inspect(next_pid)}"
+        send next_pid, n + 1
     end
   end
 
   def create_processes(n) do
+    IO.puts "Initial #{inspect(self)}"
     last = Enum.reduce 1..n, self,
       fn(_, send_to) ->
+        IO.puts "send_to pid is #{inspect(send_to)}"
         spawn(Chain, :counter, [send_to])
       end
 
